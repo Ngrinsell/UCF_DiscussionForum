@@ -1,0 +1,41 @@
+{% extends "header.html" %}
+
+{% block head %}{{ super() }}{% endblock %}
+
+{% block body %}
+<body>
+    <div class="register">
+        <div class="register-screen">
+            <div class="app-title">
+                <h1>Register</h1>
+            </div>
+
+            <div class="register-form">
+                {% if session['logged_in'] %}
+                <p>You're logged in already!</p><br>
+                <a href="" class="btn btn-primary btn-large btn-block">View Posts</a><br>
+                <a href="" class="btn btn-primary btn-large btn-block">Logout</a>
+                {% else %}
+                <form action="/register" method="POST">
+                <div class="control-group">
+                    <input type="text" class="register-field" value="" placeholder="username" name="username">
+                    <label class="register-field-icon fui-user" for="register-name"></label>
+                </div>
+
+                <div class="control-group">
+                    <input type="password" class="register-field" value="" placeholder="password" name="password">
+                    <label class="register-field-icon fui-lock" for="register-pass"></label>
+                </div>
+
+                <input type="submit" value="Register" class="btn btn-primary btn-large btn-block" >
+                </form>
+
+                <br>
+                <a href="/">Need to log in?</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

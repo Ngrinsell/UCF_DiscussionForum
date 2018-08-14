@@ -1,0 +1,109 @@
+{% extends "header.html" %}
+
+{% block head %}{{ super() }}{% endblock %}
+
+{% block body %}
+{% if session['logged_in'] %}
+ 
+
+    <div class="post">
+        <div class="post-screen">
+            <div class="logout">
+                <a href="/logout">Log out?</a>
+            </div>
+            <div class="app-title">
+                <h1>Welcome to the forum!<br>Please post to your heart's desire.</h1>
+            </div>
+ 
+            <div class="post-form">
+                <form action="/post" method="POST">
+                <div class="control-group">
+                <input type="text" class="post-field" value="" placeholder="new topic" name="topic">
+                <input type="text" class="post-field" value="" placeholder="text" name="body"> 
+                <input style="display: none;" type="text" class="post-field" value="-1" placeholder="thread_id" type="hidden" name="threadId">
+                </div>
+
+                <input type="submit" value="Post" class="btn btn-primary btn-large btn-block" >
+                </form>    
+            </div>
+            
+            <div id="accordion">
+            
+            </div>
+            
+            <div class="modal fade" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="my-modal" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalTopicTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                      <form action="/post" method="POST">
+                        <div class="control-group">
+                            <input type="text" class="post-field" value="" placeholder="reply text" name="body">
+                            <input style="display: none;" type="text" class="post-field" value="" placeholder="new topic" type="hidden" name="topic">
+                            <input style="display: none;" type="text" class="post-field" value="9" id="replyID" placeholder="thread_id" type="hidden" name="threadId">
+                        </div>
+
+                        <input type="submit" value="Post Reply" class="btn btn-primary btn-large btn-block" >
+                </form>  
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+$.ajax({
+  url: 'getPosts', //server url
+  type: 'POST',    //passing data as post method
+  dataType: 'json', // returning data as json
+  success:function(data)
+  {
+      var jsonObject = data;
+      
+    console.log(jsonObject);  //response from the server given as alert message
+    
+    $.each(jsonObject, function(i, val) {
+        $("#accordion").append("<div class='card'>" +
+                    "<div class='card-header' id='heading" + val.id +"'>" +
+                        "<h5 class='mb-0'>" +
+                            "<button class='btn btn-link postTopic' data-toggle='collapse' id='" + val.id + "' data-target='#collapse" + val.id +"' aria-expanded='true' aria-controls='collapse" + val.id +"'>" +
+                                val.topic + 
+                            "</button><button type='button' class='btn btn-primary replyBtn' data-toggle='modal' data-val=" + val.id +" data-target='#my-modal'>Reply</button></h5></div>");
+        
+            $("#heading" + val.id).after("<div id='collapse"+ val.id +"' class='collapse' aria-labelledby='heading" + val.id + "'data-parent='#accordion'>" + 
+                                            "<div class='card-body'>");
+        
+            $.each(val.reply, function(j, val2) {
+                $("#collapse"+ val.id + " .card-body").append("<div class='postReply'><p>" + val2.body + "</p><p class='postDetails'><span class='smallDetail'>By: </span>" + 
+                                                                    val2.username + " <span class='smallDetail'>@ </span>" + val2.timestamp +"</p></div>");
+            });
+        
+        $("#accordion").append("</div></div></div>");
+    });   
+  }
+});
+
+/*get ID for topic so reply can be tied to correct parent*/    
+$('#my-modal').on('show.bs.modal', function (event) {
+    var topicID = $(event.relatedTarget).data('val');
+    var topic = $("#"+topicID).text();
+    $('#replyID').val(topicID);
+    document.getElementById("modalTopicTitle").innerHTML = topic;
+});
+</script>
+ 
+{% else %}
+ 
+Please log in first! Error #2
+{% endif %}
+{% endblock %}
