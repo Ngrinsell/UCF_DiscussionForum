@@ -1,4 +1,5 @@
-# Forum thingy
+# Disussion Forum
+I headed the efforts for the website front end (HTML, CSS, JS)
 
 ## Setup
 
